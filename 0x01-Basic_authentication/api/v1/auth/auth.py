@@ -1,53 +1,30 @@
 #!/usr/bin/env python3
-"""
-Auth class
-"""
+"""Module: authentition"""
 from flask import request
 from typing import List, TypeVar
 
-"""
-required module
-"""
-
 
 class Auth:
-    """
-    class Auth to manage API authentication
-    """
+    """Authentication class"""
+
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
-        """
-        :return: False
-        """
-        if path is None:
-            return True
-        elif excluded_paths is None or excluded_paths == []:
-            return True
-        elif path in excluded_paths:
-            return False
-        else:
-            for z in excluded_paths:
-                if z.startswith(path):
-                    return False
-                if path.startswith(z):
-                    return False
-                if z[-1] == "*":
-                    if path.startswith(z[:-1]):
-                        return False
+        """returns True if the path is not in excluded_paths"""
+
+        if path is not None and excluded_paths is not None:
+            if path[-1] != "/":
+                path = path + "/"
+            if path in excluded_paths:
+                return False
         return True
 
     def authorization_header(self, request=None) -> str:
-        """
-        :return: None
-        """
-        if request is None:
-            return None
-        get_header = request.headers.get('Authorization')
-        if get_header is None:
-            return None
-        return get_header
+        """ validates all requests to secure the API"""
+        if request is not None:
+            dict_key = request.headers.get('Authorization')
+            if dict_key is not None:
+                return dict_key
+        return None
 
     def current_user(self, request=None) -> TypeVar('User'):
-        """
-        :return: None
-        """
+        """returns the current user"""
         return None
