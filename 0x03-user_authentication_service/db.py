@@ -38,10 +38,16 @@ class DB:
         self._session.commit()
         return user
 
-    def find_user_by(self, **kwargs: Dict) -> User:
+    def find_user_by(self, **kwargs) -> User:
         """returns user based on the argument"""
-        self._session.query(User).filter_by(**kwargs).one()
+        return self._session.query(User).filter_by(**kwargs).one()
 
-    def update_user(self, user_id: int, **kwargs: Dict) -> None:
+    def update_user(self, user_id: int, **kwargs) -> None:
         """updates a user based on keyword arguments"""
-        self._session.query(User).filter(User.id == user_id).update(kwargs)
+        user = self.find_user_by(id=user_id)
+        for k, v in kwargs.items():
+            if hasattr(user, k):
+                setattr(user, k, v)
+                return
+            self._session.commit()
+        raise ValueError
